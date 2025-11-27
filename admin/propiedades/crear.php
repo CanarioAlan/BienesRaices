@@ -16,14 +16,31 @@ $estacionamiento = "";
 $vendedorId = "";
 // Ejecutar el codigo despues de que el usuario envia el formulario | _server es una variable superglobal que contiene informacion del servidor y del entorno de ejecucion
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $titulo = $_POST['titulo'];
-    $precio = $_POST['precio'];
-    $descripcion = $_POST['descripcion'];
-    $habitaciones = $_POST['habitaciones'];
-    $wc = $_POST['wc'];
-    $estacionamiento = $_POST['estacionamiento'];
-    $vendedorId = $_POST['vendedor'];
+    // se puede usar filter_var para validar y sanitizar datos
+    // un ejemplo es:
+    // $precio = filter_var($_POST['precio'], FILTER_VALIDATE_INT);
+    // sanitizar: $precio = filter_var($_POST['precio'], FILTER_SANITIZE_NUMBER_INT);
+    //existen varios tipos de filtros: https://www.php.net/manual/es/filter.filters.php y https://www.php.net/manual/es/filter.filters.sanitize.php
+    ///----------------------------------------------------------------------------------------------
+    // echo "<pre>";
+    // var_dump($_POST);
+    // echo "</pre>";
+    // echo "-----------------FILES------------------";
+    // echo "<pre>";
+    // var_dump($_FILES);
+    // echo "</pre>";
+    // en este caso tambien se puede usar mysqli_real_escape_string para evitar inyecciones sql
+    // $titulo = mysqli_real_escape_string($db, $_POST['titulo']);
+    $titulo = mysqli_real_escape_string($db, $_POST['titulo']);
+    $precio = mysqli_real_escape_string($db, $_POST['precio']);
+    $descripcion =  mysqli_real_escape_string($db, $_POST['descripcion']);
+    $habitaciones = mysqli_real_escape_string($db, $_POST['habitaciones']);
+    $wc = mysqli_real_escape_string($db, $_POST['wc']);
+    $estacionamiento = mysqli_real_escape_string($db, $_POST['estacionamiento']);
+    $vendedorId = mysqli_real_escape_string($db, $_POST['vendedor']);
     $creado = date('Y/m/d');
+    // imagenes
+    $imagen = $_FILES['imagen'];
     if (!$titulo) {
         $errores[] = "Debes añadir un título";
     }
@@ -45,15 +62,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$vendedorId) {
         $errores[] = "El vendedor es obligatorio";
     }
-    // echo "<pre>";
-    // var_dump($errores);
-    // echo "</pre>";
-    // exit;
+    if (!$imagen['name']) {
+        $errores[] = "La imagen es obligatoria";
+    }
+    if ($imagen['type'] == 'jpeg' || $imagen['type'] == 'png') {
+        $errores[] = "El formato de la imagen no es valido, debe ser jpeg o png";
+    }
+    //tamaño maximo
+    $medida = 1000 * 175; //
+    if ($imagen['size'] > $medida) {
+        $errores[] = "La imagen es muy pesada, el tamaño máximo es 100kb";
+    }
     if (empty($errores)) {
-        $query = "INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, creado, vendedores_id) VALUES ('$titulo', '$precio', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$creado', '$vendedorId')";
+        //trabajando con archivos
+        //creamos una carpeta
+        $carpetaImagenes = '../../imagenes/';
+        //generar nombre unico
+        // md5 genera un hash unico conbinado con uniqid y rand conseguimos un nombre unico.
+        $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
+        //validamos si la carpeta existe.
+        if (!is_dir($carpetaImagenes)) {
+            mkdir($carpetaImagenes);
+        }
+        //subir la imagen
+        move_uploaded_file($imagen['tmp_name'], $carpetaImagenes  . $nombreImagen);
+        $query = "INSERT INTO propiedades (titulo, precio, imagen, descripcion, habitaciones, wc, estacionamiento, creado, vendedores_id) VALUES ('$titulo', '$precio', '$nombreImagen', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$creado', '$vendedorId')";
         $resultado = mysqli_query($db, $query);
         if ($resultado) {
             // Redireccionar al usuario
+            //desúes del ? le pasamos parametros por la url para mostrar mensajes y podemos usar & para agregar mas parametros un ejemplo, admin?resultado=1&accion=crear
             header('Location: /admin?resultado=1');
         }
     };
@@ -69,7 +106,8 @@ incluirTemplate('header');
             <?php echo $error ?>
         </div>
     <?php endforeach; ?>
-    <form action="/admin/propiedades/crear.php" class="formulario" method="POST">
+    <!-- el enctype permite leer al backend leer los archivos, no importa con que tecnologia este echo, siempre colocaro si vas a enviar archivos -->
+    <form action="/admin/propiedades/crear.php" class="formulario" method="POST" enctype="multipart/form-data">
         <fieldset>
             <legend>Información General</legend>
             <label for="titulo">Título:</label>
@@ -87,7 +125,7 @@ incluirTemplate('header');
             <label for="imagen">Imagen:</label>
             <input type="file"
                 id="imagen"
-                multiple accept="image/jpeg, image/png" name="imagen">
+                multiple accept="image/jpeg" name="imagen">
             <label for="descripcion">Descripción:</label>
             <textarea id="descripcion" name="descripcion"><?php echo $descripcion; ?></textarea>
         </fieldset>
@@ -133,4 +171,5 @@ incluirTemplate('header');
         <input type="submit" value="Crear Propiedad" class="boton boton-verde">
     </form>
 </main>
+
 <?php incluirTemplate('footer') ?>

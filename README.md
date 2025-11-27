@@ -4,6 +4,10 @@ Cotexto es un proyecto educativo enfocado en aprender las bases de **PHP**, desd
 
 ## Características
 
+- **Arquitectura**:
+
+  - utilizamos la arquitectura espagueti
+
 - **Frontend**:
 
   - Utiliza **Sass** para estilos avanzados.
