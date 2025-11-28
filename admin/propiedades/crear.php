@@ -1,6 +1,15 @@
 <?php
+//traemos el require de las funciones y llamamos a la funcion de autenticacion
+require '../../includes/funciones.php';
+//asignamos el resultado de la funcion a una variable
+$auth = estadoAutenticado();
+//validamos si no esta autenticado
+if (!$auth) {
+    //si no esta autenticado lo redireccionamos al inicio
+    header('Location: /');
+}
 require '../../includes/config/database.php';
-$db = conertarDB();
+$db = conectarDB();
 //consulta para obtener los vendedores
 $consulta = "SELECT * FROM vendedores";
 $resultadoConsulta = mysqli_query($db, $consulta);
@@ -95,7 +104,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     };
 }
-require '../../includes/funciones.php';
 incluirTemplate('header');
 ?>
 <main class="contenedor seccion">

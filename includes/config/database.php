@@ -1,5 +1,5 @@
 <?php
-function conertarDB(): mysqli
+function conectarDB(): mysqli
 {
     $db =  mysqli_connect("localhost", "root", "9056", "bienraices_crud");
 

@@ -6,7 +6,7 @@ if (!$id) {
     exit;
 }
 require 'includes/config/database.php';
-$db = conertarDB();
+$db = conectarDB();
 //hacemos la consulta
 $query = "SELECT * FROM propiedades WHERE id = {$id}";
 //optenemos los resultados

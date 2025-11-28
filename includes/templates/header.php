@@ -1,3 +1,11 @@
+<?php
+// verificamos si la sesion ya esta iniciada para evitar errores
+if (!isset($_SESSION)) {
+    //si no esta iniciada la iniciamos
+    session_start();
+}
+$auth = $_SESSION['login'] ?? false;
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -25,6 +33,12 @@
                         <a href="Nosotros.php">Nosotros</a>
                         <a href="Blog.php">Blog</a>
                         <a href="Contacto.php">Contactos</a>
+                        <!-- creamos un elemento validando si existe una sesion activa -->
+                        <?php if ($auth) : ?>
+                            <a href="cerrarSesion.php">Cerrar Sesión</a>
+                        <?php else: ?>
+                            <a href="login.php">Iniciar Sesión</a>
+                        <?php endif; ?>
                     </nav>
                     <!-- cierra el div barra -->
                 </div>

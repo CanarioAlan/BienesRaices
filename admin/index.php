@@ -1,7 +1,16 @@
 <?php
+//traemos el require de las funciones y llamamos a la funcion de autenticacion
+require '../includes/funciones.php';
+//asignamos el resultado de la funcion a una variable
+$auth = estadoAutenticado();
+//validamos si no esta autenticado
+if (!$auth) {
+    //si no esta autenticado lo redireccionamos al inicio
+    header('Location: /');
+}
 //improtar la conexion
 require '../includes/config/database.php';
-$db = conertarDB();
+$db = conectarDB();
 //escribir la consulta
 $query = "SELECT * FROM propiedades;";
 //consultar a la bases de datos
@@ -33,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 //usamos un template para el header
-require '../includes/funciones.php';
 incluirTemplate('header');
 ?>
 <main class="contenedor seccion">

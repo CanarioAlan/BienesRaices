@@ -36,6 +36,7 @@ Cotexto es un proyecto educativo enfocado en aprender las bases de **PHP**, desd
 ### Juan Pablo De la torre Valdez
 
 ** Web: ** https://codigoconjuan.com/
+** curso: ** https://www.udemy.com/course/desarrollo-web-completo-con-html5-css3-js-php-y-mysql
 
 ## Licencia
 

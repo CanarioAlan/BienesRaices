@@ -1,4 +1,13 @@
 <?php
+//traemos el require de las funciones y llamamos a la funcion de autenticacion
+require '../../includes/funciones.php';
+//asignamos el resultado de la funcion a una variable
+$auth = estadoAutenticado();
+//validamos si no esta autenticado
+if (!$auth) {
+    //si no esta autenticado lo redireccionamos al inicio
+    header('Location: /');
+}
 //validamos el id de la url
 $id = $_GET['id'];
 $id = filter_var($id, FILTER_VALIDATE_INT);
@@ -6,7 +15,7 @@ if (!$id) {
     header('Location: /admin');
 }
 require '../../includes/config/database.php';
-$db = conertarDB();
+$db = conectarDB();
 // consulta segun el id
 $consultaPropiedad = "SELECT * FROM propiedades WHERE id = {$id}";
 $resultadoPropiedad = mysqli_query($db, $consultaPropiedad);
@@ -98,7 +107,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     };
 }
-require '../../includes/funciones.php';
 incluirTemplate('header');
 ?>
 <main class="contenedor seccion">

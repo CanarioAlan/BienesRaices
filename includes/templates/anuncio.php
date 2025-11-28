@@ -2,7 +2,7 @@
 // inportamos la coneccion
 // usamos __DIR__ para obtener la ruta absoluta del archivo actual
 require __DIR__ . '/../config/database.php';
-$db = conertarDB();
+$db = conectarDB();
 //hacemos la consulta
 $query = "SELECT * FROM propiedades LIMIT {$limite}";
 //optenemos los resultados
